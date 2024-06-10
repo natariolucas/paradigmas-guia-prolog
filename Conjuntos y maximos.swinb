@@ -1,0 +1,167 @@
+<div class="notebook">
+
+<div class="nb-cell markdown" name="md1">
+## Conjuntos
+
+Las consultas de prolog que unifican valores a variables (es decir, que _retorna_ información adicional) pueden ser pensadas en forma de conjuntos. Un predicado junto a sus atributos variables pueden ser pensados como un conjunto de información. De esa manera podemos pensar ciertas operaciónes como operaciones de conjuntos (unión \/, intersección /\ y resta --)
+
+Tomemos como ejemplo dos conjuntos de hechos, `parcial1` y `parcial2`
+
+</div>
+
+<div class="nb-cell program" data-background="true" name="p1">
+parcial1(a, 1).
+parcial1(b, 2).
+parcial1(c, 3).
+parcial1(d, 4).
+parcial1(e, 5).
+parcial1(f, 6).
+
+parcial2(a, 4).
+parcial2(b, 5).
+parcial2(c, 6).
+parcial2(g, 7).
+parcial2(h, 8).
+parcial2(i, 9).
+</div>
+
+<div class="nb-cell program" data-background="true" name="p6">
+% Resta
+alumnos_solo_parcial1(X):-
+    parcial1(X, _),       % Conjunto de alumnos que rindieron parcial1
+    \+parcial2(X, _).     % MENOS conjunto de alumnos que rindieron parcial2
+
+alumnos_solo_parcial2(X):-
+    parcial2(X, _),
+    \+parcial1(X, _).
+
+% Intersección
+alumnos_ambos_parciales(X):-
+    parcial1(X, _), parcial2(X, _).
+
+% Union
+alumnos_unidos(X):-
+    parcial1(X, _);
+    parcial2(X, _).
+
+% Union unica
+alumnos(X):-
+    parcial1(X, _), parcial2(X, _)    % interseccion A /\ B
+    ;                                 % union
+    parcial1(X, _), \+parcial2(X, _)  % resta A-B
+    ;                                 % union
+    parcial2(X, _), \+parcial1(X, _). % resta B-A
+</div>
+
+<div class="nb-cell query" data-chunk="20" data-tabled="true" name="q1">
+alumnos(Alumno)
+</div>
+
+<div class="nb-cell markdown" name="md3">
+Lo interesante es que ahora tenemos un nuevo conocimiento que es alumno, que podría ser alumnos de una comisión, entonces puedo querer volver a realizar una union para obtener todos los alumnos de una cátedra y así sucesivamente.
+
+Nota: Para poder trabajar con estas 3 operaciones de conjuntos, se debe trabajar siempre con el mismo conjunto de variables en todos los casos. 
+
+Por último vamos a ver una operación de conjuntos sobre si mismo, donde se involucran 2 variables distintas, que es el producto cartesiano o producto cruz (X)
+</div>
+
+<div class="nb-cell program" name="p2">
+producto_cartesiano_alumnos(Alumno1, Alumno2):-
+    alumnos(Alumno1),
+    alumnos(Alumno2).
+
+% Equipo de alumnos posible.
+% Para 9 alumnos, son 72. 9 * 9 resultados posibles - 9 donde Alumno1 y Alumno2 son iguales
+equipos_posibles(Alumno1, Alumno2):-
+    producto_cartesiano_alumnos(Alumno1, Alumno2),
+    Alumno1 \== Alumno2.
+    
+</div>
+
+<div class="nb-cell query" data-chunk="10" data-tabled="true" name="q2">
+equipos_posibles(Alumno1, Alumno2).
+</div>
+
+<div class="nb-cell markdown" name="md2">
+## Máximos y mínimos
+
+Prolog permite el calculo de máximos y mínimos a través de operaciones intermedias de conjuntos. Vamos a utilizar las operaciones de conjuntos vistas hasta el momento para poder obtener el mayor o menor de un conjunto.
+
+Tomemos como ejemplo un conjunto de hechos de notas y veamos como obtener la nota más alta. Podemos intentar luego, ver a quien o quienes les pertenece la misma.
+
+</div>
+
+<div class="nb-cell program" name="p3">
+nota(a, 1).
+nota(b, 3).
+nota(c, 2).
+nota(d, 4).
+nota(e, 8).
+nota(f, 6).
+
+producto_cartesiano(X, Y):-nota(_, X), nota(_, Y).
+
+seleccion(X, Y):-producto_cartesiano(X, Y), X &lt; Y. 
+
+% Para este paso
+% - Mi X va a tener todos los valores posibles menos el máximo
+% - Mi Y todos menos el mínimo
+
+% Decido con que parte me quedo. Esta parte va a ser lo que se reste del conjunto total
+proyeccion(X):-seleccion(X, _).
+
+% En caso de haber más de un máximo, obtendremos un resultado por cada uno
+max_nota(X):-nota(_, X), \+ proyeccion(X).
+
+max_nota(X, Alumno):-nota(Alumno, X), \+ proyeccion(X).
+
+</div>
+
+<div class="nb-cell query" data-chunk="10" data-tabled="true" name="q3">
+max_nota(X, Alumno).
+</div>
+
+<div class="nb-cell markdown" name="md4">
+Ahora intentemos realizar un ejercicio con todo lo que aprendimos. Vamos a disponer de un conjunto de notas con los alumnos, como en el caso anterior, pero un alumno puede tener más de una nota.
+
+Quiero poder utilizar un predicado llamado `mayor_nota/2` que me de la nota más alta pero por cada alumno
+</div>
+
+<div class="nb-cell program" name="p4">
+nota(a, 1).
+nota(a, 5).
+nota(a, 8).
+nota(a, 9).
+
+nota(b, 3).
+nota(b, 3).
+nota(b, 3).
+nota(b, 3).
+
+nota(c, 1).
+nota(c, 4).
+nota(c, 9).
+
+nota(d, 4).
+
+% Programa
+
+
+</div>
+
+<div class="nb-cell query" data-chunk="10" data-tabled="true" name="q4">
+% Mayor nota X para cada alumno A
+mayor_nota(A, X).
+</div>
+
+<div class="nb-cell program" data-singleline="true" name="p5">
+% Solución
+
+% (pegar arriba, por contexto de nota/2)
+
+solucion_todos_menos_alta(A, X):-nota(A, X), nota(A, Y), X &lt; Y.
+
+solucion_mayor_nota(A, X):- nota(A, X), \+solucion_todos_menos_alta(A, X).
+</div>
+
+</div>
