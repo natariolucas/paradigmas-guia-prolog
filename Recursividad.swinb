@@ -1,0 +1,58 @@
+<div class="notebook">
+
+<div class="nb-cell markdown" name="md1">
+## Recursividad
+La recursividad en Prolog permite definir un predicado en términos de sí mismo. Esto implica definir casos base, que son condiciones de terminación, junto con casos recursivos que simplifican gradualmente el problema hasta que alcanza el caso base. Este enfoque permite soluciones concisas y elegantes a problemas que involucran estructuras repetitivas o anidadas.
+
+### Ejemplo
+Consideremos un problema básico de recursividad como suele ser el factorial. El factorial de un número entero no negativo N, denotado como N!, es el producto de todos los enteros positivos menores o iguales a N. Es decir, para 7!, la operación debería ser 7 x 6 x 5 x 4 x 3 x 2 x 1.
+
+</div>
+
+<div class="nb-cell program" data-background="true" name="p1">
+factorial(0, 1).               % Regla: caso base
+factorial(N, Resultado):-      % Regla: caso recursivo
+    N &gt; 0,                     % para todo N mayor a 0
+    N1 is N - 1,               % se define N1 como N - 1
+    factorial(N1, Parcial),    % se invoca la recursividad, preguntando por el valor un paso detrás
+    Resultado is Parcial * N.  % se obtiene el resultado
+
+</div>
+
+<div class="nb-cell query" data-chunk="20" data-run="onload" data-tabled="true" name="q1">
+between(-2, 10, X),
+factorial(X, Resultado).
+</div>
+
+<div class="nb-cell markdown" name="md2">
+La estructura de la recursividad es siempre de la misma manera. Depende el caso quizás es necesario definir más de una regla base o regla recursiva, o quizás se deba invocar a la recursividad más de una vez, o la operación no es tan sencilla como en este caso, pero la base se respeta
+
+    * Regla base
+    * Regla recursiva
+  	    * Alcance de la regla
+        * Invocación recursividad
+        * Operación con resultado parcial
+
+Observen que la consulta solo dio verdadero para los casos donde X &gt;= 0. Eso es porque para casos negativos de N, no está definida la regla
+
+Observen también que estamos utilizando el operador `is/2`. Este operador no cumple con las reglas del patrón lógico como el resto de los operadores, por lo tanto, la regla necesita tener si o si definidas para el momento de la operación `is/2`, todo lo que este a su derecha, que es lo que va a ser evaluado. Un mejor operador sería el `#=/2` pero no entra de nuestro alcance de la materia por estar incluido en una biblioteca (clpfd)
+
+</div>
+
+<div class="nb-cell query" data-tabled="true" name="q2">
+% Fallará para la regla recursiva
+factorial(X, Resultado).
+</div>
+
+<div class="nb-cell query" data-tabled="true" name="q3">
+% Fallará
+factorial(X, 3628800).
+</div>
+
+<div class="nb-cell query" data-tabled="true" name="q4">
+% Muy lento ya que intentará evaluar en cada paso, salvo que me detenga en el primero
+between(0, 100000, X),
+factorial(X, 3628800).
+</div>
+
+</div>
