@@ -52,7 +52,8 @@ adecuadas(X,Y):-
     	( hombre(X,_,_,_) , mujer(Y,_,_,_) ) ;
     	( mujer(X,_,_,_) , hombre(Y,_,_,_) )
     ),
-    conviene_fisicamente(X,Y), conviene_fisicamente(Y,X), conviene_gustos(X,Y).
+    conviene_fisicamente(X,Y), conviene_fisicamente(Y,X), conviene_gustos(X,Y),
+    X @< Y.
 
 conviene_fisicamente(X,Y):- 
     ( hombre(Y,Altura,ColorCabello,Edad) ; mujer(Y,Altura,ColorCabello,Edad) ) ,
