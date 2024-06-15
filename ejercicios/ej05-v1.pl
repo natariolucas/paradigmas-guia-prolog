@@ -55,4 +55,28 @@ todos_menos_la_mas_alta(X):-
     seleccion(X,_).
 
 merito(X,Promedio):-
-	promociona(X,Promedio), \+todos_menos_la_mas_alta(Promedio).
+	promociona(X,Promedio), \+todos_menos_la_mas_alta(Promedio).%
+
+% 5. Ahora se desea obtener cuales fueron las dos notas más altas, 
+% considerando simplemente a la nota como el promedio de la nota de parcial1 
+% y parcial2. Solo interesan los números. Un tip es pensar la resolución en 
+% dos etapas, la más alta, y después la más alta de lo restante
+promedios(X,Promedio):-
+    parcial1(X,N1),parcial2(X,N2), Promedio is (N1+N2)/2.
+
+producto_cartesiano_promedios(PX,PY):-
+    promedios(_,PX), promedios(_, PY), PX < PY.
+todos_promedios_menos_el_mas_alto(PX):-
+    producto_cartesiano_promedios(PX, _).
+todos_promedios_menos_el_mas_bajo(PY):-
+    producto_cartesiano_promedios(_, PY).
+
+promedio_maximo(X):-
+    promedios(_,X), \+todos_promedios_menos_el_mas_alto(X).
+
+producto_cartesiano_promedios2(PX,PY):-
+    todos_promedios_menos_el_mas_alto(PX), todos_promedios_menos_el_mas_alto(PY), PX < PY.
+todos_promedios_menos_el_mas_alto2(PX):-
+    producto_cartesiano_promedios2(PX, _).
+promedio_maximo2(X2):-
+    todos_promedios_menos_el_mas_alto(X2), \+todos_promedios_menos_el_mas_alto2(X2).
